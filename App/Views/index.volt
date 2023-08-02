@@ -28,37 +28,37 @@
     </div>
 </div>
 
-<form class="ui large grey segment form" id="module-template-form">
+<form class="ui large grey segment form" id="module-quality-assessment-form">
     <div class="ui ribbon label">
         <i class="phone icon"></i> 123456
     </div>
-    <div class="ui grey top right attached label" id="status">{{ t._("mod_tpl_Disconnected") }}</div>
+    <div class="ui grey top right attached label" id="status">{{ t._("module_quality_assessmentDisconnected") }}</div>
     {{ form.render('id') }}
 
     <div class="ten wide field disability">
-        <label >{{ t._('mod_tpl_TextFieldLabel') }}</label>
+        <label >{{ t._('module_quality_assessmentTextFieldLabel') }}</label>
         {{ form.render('text_field') }}
     </div>
 
     <div class="ten wide field disability">
-        <label >{{ t._('mod_tpl_TextAreaFieldLabel') }}</label>
+        <label >{{ t._('module_quality_assessmentTextAreaFieldLabel') }}</label>
         {{ form.render('text_area_field') }}
     </div>
 
     <div class="ten wide field disability">
-        <label >{{ t._('mod_tpl_PasswordFieldLabel') }}</label>
+        <label >{{ t._('module_quality_assessmentPasswordFieldLabel') }}</label>
         {{ form.render('password_field') }}
     </div>
 
     <div class="four wide field disability">
-        <label>{{ t._('mod_tpl_IntegerFieldLabel') }}</label>
+        <label>{{ t._('module_quality_assessmentIntegerFieldLabel') }}</label>
         {{ form.render('integer_field') }}
     </div>
 
     <div class="field disability">
         <div class="ui segment">
             <div class="ui checkbox">
-                <label>{{ t._('mod_tpl_CheckBoxFieldLabel') }}</label>
+                <label>{{ t._('module_quality_assessmentCheckBoxFieldLabel') }}</label>
                 {{ form.render('checkbox_field') }}
             </div>
         </div>
@@ -67,14 +67,14 @@
     <div class="field disability">
         <div class="ui segment">
             <div class="ui toggle checkbox">
-                <label>{{ t._('mod_tpl_ToggleFieldLabel') }}</label>
+                <label>{{ t._('module_quality_assessmentToggleFieldLabel') }}</label>
                 {{ form.render('toggle_field') }}
             </div>
         </div>
     </div>
 
     <div class="ten wide field disability">
-        <label >{{ t._('mod_tpl_DropDownFieldLabel') }}</label>
+        <label >{{ t._('module_quality_assessmentDropDownFieldLabel') }}</label>
         {{ form.render('dropdown_field') }}
     </div>
 

@@ -5,13 +5,13 @@
  * Written by Nikolay Beketov, 11 2018
  *
  */
-const idUrl     = 'module-template';
-const idForm    = 'module-template-form';
-const className = 'ModuleTemplate';
+const idUrl     = 'module-quality-assessment';
+const idForm    = 'module-quality-assessment-form';
+const className = 'ModuleQualityAssessment';
 const inputClassName = 'mikopbx-module-input';
 
 /* global globalRootUrl, globalTranslate, Form, Config */
-const ModuleTemplate = {
+const ModuleQualityAssessment = {
 	$formObj: $('#'+idForm),
 	$checkBoxes: $('#'+idForm+' .ui.checkbox'),
 	$dropDowns: $('#'+idForm+' .ui.dropdown'),
@@ -30,7 +30,7 @@ const ModuleTemplate = {
 			rules: [
 				{
 					type: 'empty',
-					prompt: globalTranslate.mod_tpl_ValidateValueIsEmpty,
+					prompt: globalTranslate.module_quality_assessmentValidateValueIsEmpty,
 				},
 			],
 		},
@@ -39,7 +39,7 @@ const ModuleTemplate = {
 			rules: [
 				{
 					type: 'empty',
-					prompt: globalTranslate.mod_tpl_ValidateValueIsEmpty,
+					prompt: globalTranslate.module_quality_assessmentValidateValueIsEmpty,
 				},
 			],
 		},
@@ -48,7 +48,7 @@ const ModuleTemplate = {
 			rules: [
 				{
 					type: 'empty',
-					prompt: globalTranslate.mod_tpl_ValidateValueIsEmpty,
+					prompt: globalTranslate.module_quality_assessmentValidateValueIsEmpty,
 				},
 			],
 		},
@@ -457,28 +457,28 @@ const ModuleTemplate = {
 					.removeClass('grey')
 					.removeClass('red')
 					.addClass('green');
-				window[className].$moduleStatus.html(globalTranslate.mod_tpl_Connected);
+				window[className].$moduleStatus.html(globalTranslate.module_quality_assessmentConnected);
 				break;
 			case 'Disconnected':
 				window[className].$moduleStatus
 					.removeClass('green')
 					.removeClass('red')
 					.addClass('grey');
-				window[className].$moduleStatus.html(globalTranslate.mod_tpl_Disconnected);
+				window[className].$moduleStatus.html(globalTranslate.module_quality_assessmentDisconnected);
 				break;
 			case 'Updating':
 				window[className].$moduleStatus
 					.removeClass('green')
 					.removeClass('red')
 					.addClass('grey');
-				window[className].$moduleStatus.html(`<i class="spinner loading icon"></i>${globalTranslate.mod_tpl_UpdateStatus}`);
+				window[className].$moduleStatus.html(`<i class="spinner loading icon"></i>${globalTranslate.module_quality_assessmentUpdateStatus}`);
 				break;
 			default:
 				window[className].$moduleStatus
 					.removeClass('green')
 					.removeClass('red')
 					.addClass('grey');
-				window[className].$moduleStatus.html(globalTranslate.mod_tpl_Disconnected);
+				window[className].$moduleStatus.html(globalTranslate.module_quality_assessmentDisconnected);
 				break;
 		}
 	},
