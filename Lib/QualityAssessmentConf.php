@@ -21,6 +21,7 @@ namespace Modules\ModuleQualityAssessment\Lib;
 
 use MikoPBX\AdminCabinet\Forms\ExtensionEditForm;
 use MikoPBX\Common\Models\PbxSettings;
+use MikoPBX\Core\System\PBX;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
@@ -39,14 +40,6 @@ class QualityAssessmentConf extends ConfigClass
      */
     public function modelsEventChangeData($data): void
     {
-        // f.e. if somebody changes PBXLanguage, we will restart all workers
-        if (
-            $data['model'] === PbxSettings::class
-            && $data['recordId'] === 'PBXLanguage'
-        ) {
-            $templateMain = new QualityAssessmentMain();
-            $templateMain->startAllServices(true);
-        }
     }
 
     /**
@@ -56,16 +49,7 @@ class QualityAssessmentConf extends ConfigClass
      */
     public function getModuleWorkers(): array
     {
-        return [
-            [
-                'type'   => WorkerSafeScriptsCore::CHECK_BY_BEANSTALK,
-                'worker' => WorkerQualityAssessmentMain::class,
-            ],
-            [
-                'type'   => WorkerSafeScriptsCore::CHECK_BY_AMI,
-                'worker' => WorkerQualityAssessmentAMI::class,
-            ],
-        ];
+        return [];
     }
 
     /**
@@ -98,110 +82,80 @@ class QualityAssessmentConf extends ConfigClass
         return $res;
     }
 
-    /**
-     * Prepares the include block within a Volt template.
-     * @see https://docs.mikopbx.com/mikopbx-development/module-developement/module-class#onvoltblockcompile
-     *
-     * @param string $controller The called controller name.
-     * @param string $blockName The named in volt template block name.
-     * @param View $view The view instance.
-     *
-     * @return string the volt partial file path without extension.
-     */
-    public function onVoltBlockCompile(string $controller, string $blockName, View $view):string
-    {
-        $result = '';
-        if ($controller==='Extensions'){
-            switch ($blockName){
-                case "GeneralTabFields":
-                    $result = "{$this->moduleDir}/App/Views/Extensions/GeneralTabFields";
-                    break;
-                case "AdditionalTab":
-                    $result = "{$this->moduleDir}/App/Views/Extensions/AdditionalTab";
-                    break;
-                default:
-            }
-        }
 
-        return $result;
+    /**
+     * Prepares additional parameters for each incoming context
+     * and incoming route after dial command in an extensions.conf file
+     * @see https://docs.mikopbx.com/mikopbx-development/module-developement/module-class#generateincomingroutafterdialcontext
+     *
+     *
+     * @param string $uniqId
+     *
+     * @return string
+     */
+    public function generateIncomingRoutAfterDialContext(string $uniqId): string
+    {
+        return 'same => n,Goto(quality-start,s,1)';
     }
 
     /**
-     * Called from BaseForm before the form is initialized.
-     * @see https://docs.mikopbx.com/mikopbx-development/module-developement/module-class#onbeforeforminitialize
+     * Prepares additional parameters for each outgoing route context
+     * after dial call in the extensions.conf file
+     * @see https://docs.mikopbx.com/mikopbx-development/module-developement/module-class#generateoutroutafterdialcontext
      *
-     * @param Form $form The called form instance.
-     * @param mixed $entity The called form entity.
-     * @param mixed $options The called form options.
+     * @param array $rout
      *
-     * @return void
+     * @return string
      */
-    public function onBeforeFormInitialize(Form $form, $entity, $options):void
+    public function generateOutRoutContext(array $rout): string
     {
-        if (is_a($form, ExtensionEditForm::class)) {
-            // Prepare groups for select
-            $arrGroupsForSelect = [
-                'sales' => $this->translation->_('module_quality_assessmentSalesDepartment'),
-                'support' => $this->translation->_('module_quality_assessmentSupportDepartment'),
-                'hr' => $this->translation->_('module_quality_assessmentHRDepartment'),
-                'accounts' => $this->translation->_('module_quality_assessmentAccountDepartment'),
-            ];
-
-            $groupForSelect = new Select(
-                'module_quality_assessmentselect_group', $arrGroupsForSelect, [
-                    'using'    => [
-                        'id',
-                        'name',
-                    ],
-                    //'value' => $userGroupId,
-                    'useEmpty' => false,
-                    'class'    => 'ui selection dropdown search select-group-field',
-                ]
-            );
-
-            // Add the group select field to the form
-            $form->add($groupForSelect);
-
-            // Look at onAfterExecuteRoute to understand how it save into DB
-        }
+        return 'same => n,Set(DOPTIONS=${DOPTIONS}F(quality-start,s,1))'."\n\t";
     }
 
     /**
-     * Calls from BaseController on afterExecuteRoute function
+     * Generates additional contexts for the queue.
      *
-     * @param Controller $controller
-     * @return void
+     * @return string The generated extension contexts.
      */
-    public function onAfterExecuteRoute(Controller $controller):void
+    public function extensionGenContexts(): string
     {
-        $userGroup = $controller->request->getPost('module_quality_assessmentselect_group');
-        $userId = $controller->request->getPost('user_id');
-        // Add an extra code to save it into DB
+        // Generate internal numbering plan.
+        $conf = PHP_EOL."[quality-start]".PHP_EOL;
+        $conf .= 'exten => _.!,1,NoOp(--- Quality assessment ---)' . PHP_EOL."\t";
+        $conf .= 'same => n,ExecIf($[${M_DIALSTATUS}!=ANSWER]?return)'.PHP_EOL."\t";
+        $conf .= 'same => n,Set(filename_bye=/storage/usbdisk1/quality/sounds/bye)'.PHP_EOL."\t";
+        $conf .= 'same => n,Set(filename_1=/root/59ff28a873e338ee2709c47debf9753f)'.PHP_EOL."\t";
+        $conf .= 'same => n,Set(filename_2=/root/91f03db4c7a73b88a49d25c60d755a0e)'.PHP_EOL."\t";
+        $conf .= 'same => n,Set(f_num=0);'.PHP_EOL."\t";
+        $conf .= 'same => n,Goto(ivr-quality,s,1)'.PHP_EOL.PHP_EOL;
+
+        $conf .= PHP_EOL."[ivr-quality]".PHP_EOL;
+        $conf .= 'exten => s,1,NoOP( start ivr quality )' . PHP_EOL."\t";
+        $conf .= 'same => n,Set(f_num=$[${f_num} + 1])' . PHP_EOL."\t";
+        $conf .= 'same => n,Set(filename=${filename_${f_num}}' . PHP_EOL."\t";
+        $conf .= 'same => n,GotoIf($["x${filename}" == "x"]?ivr-quality,bye,1);' . PHP_EOL."\t";
+        $conf .= 'same => n,Background(${filename})' . PHP_EOL."\t";
+        $conf .= 'same => n,WaitExten(5)' . PHP_EOL.PHP_EOL;
+
+        $conf .= 'exten => _[1-5],1,NoOP( quality is ${EXTEN})' . PHP_EOL."\t";
+        $conf .= "same => n,AGI({$this->moduleDir}/agi-bin/quality_agi.php)" . PHP_EOL."\t";
+        $conf .= 'same => n,Goto(ivr-quality,s,1)' . PHP_EOL.PHP_EOL;
+
+        $conf .= 'exten => _[06-9],Goto(ivr-quality,s,1)' . PHP_EOL.PHP_EOL;
+
+        $conf .= 'exten => bye,1,ExecIf($["x${filename_bye}" != "x"]?Playback(${filename_bye}));' . PHP_EOL."\t";
+        $conf .= 'same => n,Hangup()' . PHP_EOL.PHP_EOL;
+        return $conf;
     }
 
     /**
-     * Modifies the system menu.
-     * @see https://docs.mikopbx.com/mikopbx-development/module-developement/module-class#onbeforeheadermenushow
-     *
-     * @param array $menuItems The menu items for modifications.
+     * Process after enable action in web interface
      *
      * @return void
      */
-    public function onBeforeHeaderMenuShow(array &$menuItems):void
+    public function onAfterModuleEnable(): void
     {
-        $menuItems['module_quality_assessmentAdditionalMenuItem']=[
-            'caption'=>'module_quality_assessmentAdditionalMenuItem',
-            'iconclass'=>'',
-            'submenu'=>[
-                '/module-quality-assessment/additional-page'=>[
-                    'caption' => 'module_quality_assessmentAdditionalSubMenuItem',
-                    'iconclass' => 'gear',
-                    'action' => 'index',
-                    'param' => '',
-                    'style' => '',
-                ],
-            ]
-        ];
+        PBX::dialplanReload();
     }
 
 }
