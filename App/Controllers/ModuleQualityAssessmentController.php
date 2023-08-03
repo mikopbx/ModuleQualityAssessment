@@ -21,11 +21,14 @@ namespace Modules\ModuleQualityAssessment\App\Controllers;
 use MikoPBX\AdminCabinet\Controllers\BaseController;
 use MikoPBX\Common\Models\CallQueues;
 use MikoPBX\Common\Models\Extensions;
+use MikoPBX\Common\Models\SoundFiles;
+use MikoPBX\Core\System\Util;
 use MikoPBX\Modules\PbxExtensionUtils;
 use Modules\ModuleQualityAssessment\App\Forms\ModuleQualityAssessmentForm;
 use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
 use MikoPBX\Common\Models\Providers;
 use Modules\ModuleQualityAssessment\Models\PhoneBook;
+use Modules\ModuleQualityAssessment\Models\QuestionsList;
 
 class ModuleQualityAssessmentController extends BaseController
 {
@@ -111,8 +114,8 @@ class ModuleQualityAssessmentController extends BaseController
                         $tmpData[$key] = $metadata['icon']??'';
                     }elseif('delButton' === $key){
                         $tmpData[$key] = '';
-                    }elseif(isset($rowData[$key])){
-                        $tmpData[$key] =  $rowData[$key];
+                    }else{
+                        $tmpData[$key] =  $rowData[$key]??'';
                     }
                 }
                 $records[] = $tmpData;
@@ -164,8 +167,14 @@ class ModuleQualityAssessmentController extends BaseController
         $this->view->pick("{$this->moduleDir}/App/Views/index");
 
         // Retrieve queues and users for selection lists
-        $this->view->queues = CallQueues::find(['columns' => ['id', 'name']]);
-        $this->view->users  = Extensions::find(["type = 'SIP'", 'columns' => ['number', 'callerid']]);
+        $this->view->sounds = SoundFiles::find(['columns' => ['id', 'name']]);
+
+        $this->view->roles = [
+            (object)['id' => QuestionsList::ROLE_START, 'name' => Util::translate('module_quality_ROLE_START')],
+            (object)['id' => QuestionsList::ROLE_QUESTION, 'name' => Util::translate('module_quality_ROLE_QUESTION')],
+            (object)['id' => QuestionsList::ROLE_END, 'name' => Util::translate('module_quality_ROLE_END')],
+        ];
+
     }
 
     /**
@@ -187,8 +196,7 @@ class ModuleQualityAssessmentController extends BaseController
             switch ($key) {
                 case 'id':
                     break;
-                case 'checkbox_field':
-                case 'toggle_field':
+                case 'useTts':
                     // Handle checkbox and toggle fields
                     if (array_key_exists($key, $data)) {
                         $record->$key = ($data[$key] === 'on') ? '1' : '0';
@@ -257,14 +265,14 @@ class ModuleQualityAssessmentController extends BaseController
      */
     private function getTablesDescription():array
     {
-        $description['PhoneBook'] = [
+        $description['QuestionsList'] = [
             'cols' => [
-                'rowIcon'    => ['header' => '',                        'class' => 'collapsing', 'icon' => 'user'],
-                'priority'   => ['header' => '',                        'class' => 'collapsing'],
-                'call_id'    => ['header' => 'Caller representation',   'class' => 'ten wide'],
-                'number_rep' => ['header' => 'Phone number',            'class' => 'four wide'],
-                'queueId'    => ['header' => 'Phone number as int',     'class' => 'collapsing', 'select' => 'queues-list'],
-                'delButton'  => ['header' => '',                        'class' => 'collapsing']
+                'rowIcon'        => ['header' => '',                                                  'class' => 'collapsing', 'icon' => 'user'],
+                'priority'       => ['header' => '',                                                  'class' => 'collapsing'],
+                'textQuestions'  => ['header' => Util::translate('module_quality_TextQuestion'), 'class' => 'ten wide'],
+                'soundFileId'    => ['header' => Util::translate('module_quality_SoundFile'),    'class' => 'collapsing', 'select' => 'sound-list'],
+                'role'           => ['header' => Util::translate('module_quality_Role'),         'class' => 'collapsing', 'select' => 'role-list'],
+                'delButton'      => ['header' => '',                                                  'class' => 'collapsing']
             ],
             'ajaxUrl' => '/getNewRecords',
             'icon' => 'user',

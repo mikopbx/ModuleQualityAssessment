@@ -1,82 +1,41 @@
-
+<form class="ui large grey segment form" id="module-quality-assessment-form">
+    {{ form.render('id') }}
+    <div class="field disability">
+        <div class="ui segment">
+            <div class="ui toggle checkbox">
+                <label>{{ t._('module_quality_useTts') }}</label>
+                {{ form.render('useTts') }}
+            </div>
+        </div>
+    </div>
+    <div class="ten wide field disability">
+        <label >{{ t._('module_quality_yandexApiKey') }}</label>
+        {{ form.render('yandexApiKey') }}
+    </div>
+    {{ partial("partials/submitbutton",['indexurl':'pbx-extension-modules/index/']) }}
+</form>
 <div class="ui grid">
     <div class="ui row">
         <div class="ui five wide column">
-            {{ link_to("#", '<i class="add user icon"></i>  '~t._('module_template_AddNewRecord'), "class": "ui blue button", "id":"add-new-row", "id-table":"PhoneBook-table") }}
+            {{ link_to("#", '<i class="add user icon"></i>  '~t._('module_template_AddNewRecord'), "class": "ui blue button", "id":"add-new-row", "id-table":"QuestionsList-table") }}
         </div>
     </div>
 </div>
 <br>
-<table id="PhoneBook-table" class="ui small very compact single line table"></table>
-
-<select id="queues-list" style="display: none;">
-    {% for record in queues %}
+<table id="QuestionsList-table" class="ui small very compact single line table"></table>
+<select id="sound-list" style="display: none;">
+    {% for record in sounds %}
         <option value="{{ record.id }}">{{ record.name }}</option>
     {% endfor %}
 </select>
-
-<select id="users-list" style="display: none;">
-    {% for record in users %}
-        <option value="{{ record.number }}">{{ record.callerid }}</option>
+<select id="role-list" style="display: none;">
+    {% for record in roles %}
+        <option value="{{ record.id }}">{{ record.name }}</option>
     {% endfor %}
 </select>
-
 <div id="template-select" style="display: none;">
     <div class="ui dropdown select-group" data-value="PARAM">
         <div class="text">PARAM</div>
         <i class="dropdown icon"></i>
     </div>
 </div>
-
-<form class="ui large grey segment form" id="module-quality-assessment-form">
-    <div class="ui ribbon label">
-        <i class="phone icon"></i> 123456
-    </div>
-    <div class="ui grey top right attached label" id="status">{{ t._("module_quality_assessmentDisconnected") }}</div>
-    {{ form.render('id') }}
-
-    <div class="ten wide field disability">
-        <label >{{ t._('module_quality_assessmentTextFieldLabel') }}</label>
-        {{ form.render('text_field') }}
-    </div>
-
-    <div class="ten wide field disability">
-        <label >{{ t._('module_quality_assessmentTextAreaFieldLabel') }}</label>
-        {{ form.render('text_area_field') }}
-    </div>
-
-    <div class="ten wide field disability">
-        <label >{{ t._('module_quality_assessmentPasswordFieldLabel') }}</label>
-        {{ form.render('password_field') }}
-    </div>
-
-    <div class="four wide field disability">
-        <label>{{ t._('module_quality_assessmentIntegerFieldLabel') }}</label>
-        {{ form.render('integer_field') }}
-    </div>
-
-    <div class="field disability">
-        <div class="ui segment">
-            <div class="ui checkbox">
-                <label>{{ t._('module_quality_assessmentCheckBoxFieldLabel') }}</label>
-                {{ form.render('checkbox_field') }}
-            </div>
-        </div>
-    </div>
-
-    <div class="field disability">
-        <div class="ui segment">
-            <div class="ui toggle checkbox">
-                <label>{{ t._('module_quality_assessmentToggleFieldLabel') }}</label>
-                {{ form.render('toggle_field') }}
-            </div>
-        </div>
-    </div>
-
-    <div class="ten wide field disability">
-        <label >{{ t._('module_quality_assessmentDropDownFieldLabel') }}</label>
-        {{ form.render('dropdown_field') }}
-    </div>
-
-    {{ partial("partials/submitbutton",['indexurl':'pbx-extension-modules/index/']) }}
-</form>

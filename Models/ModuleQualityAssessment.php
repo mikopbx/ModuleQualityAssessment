@@ -34,53 +34,19 @@ class ModuleQualityAssessment extends ModulesModelsBase
     public $id;
 
     /**
-     * Text field example
-     *
-     * @Column(type="string", nullable=true)
-     */
-    public $text_field;
-
-    /**
-     * TextArea field example
-     *
-     * @Column(type="string", nullable=true)
-     */
-    public $text_area_field;
-
-    /**
-     * Password field example
-     *
-     * @Column(type="string", nullable=true)
-     */
-    public $password_field;
-
-    /**
-     * Integer field example
-     *
-     * @Column(type="integer", default="1", nullable=true)
-     */
-    public $integer_field;
-
-    /**
      * CheckBox
      *
-     * @Column(type="integer", default="1", nullable=true)
+     * @Column(type="integer", default="0", nullable=true)
      */
-    public $checkbox_field;
+    public $useTts;
 
     /**
-     * Toggle
-     *
-     * @Column(type="integer", default="1", nullable=true)
-     */
-    public $toggle_field;
-
-    /**
-     * Dropdown menu
+     * Yandex API Key
      *
      * @Column(type="string", nullable=true)
      */
-    public $dropdown_field;
+    public $yandexApiKey;
+
 
     /**
      * Returns dynamic relations between module models and common models
@@ -117,18 +83,18 @@ class ModuleQualityAssessment extends ModulesModelsBase
     public function initialize(): void
     {
         $this->setSource('m_ModuleQualityAssessment');
-        $this->hasOne(
-            'dropdown_field',
-            Providers::class,
-            'id',
-            [
-                'alias'      => 'Providers',
-                'foreignKey' => [
-                    'allowNulls' => true,
-                    'action'     => Relation::NO_ACTION,
-                ],
-            ]
-        );
+//        $this->hasOne(
+//            'dropdown_field',
+//            Providers::class,
+//            'id',
+//            [
+//                'alias'      => 'Providers',
+//                'foreignKey' => [
+//                    'allowNulls' => true,
+//                    'action'     => Relation::NO_ACTION,
+//                ],
+//            ]
+//        );
         parent::initialize();
     }
 

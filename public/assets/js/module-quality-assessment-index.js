@@ -17,8 +17,8 @@ var ModuleQualityAssessment = {
   $formObj: $('#' + idForm),
   $checkBoxes: $('#' + idForm + ' .ui.checkbox'),
   $dropDowns: $('#' + idForm + ' .ui.dropdown'),
-  saveTableAJAXUrl: globalRootUrl + idUrl + "/saveTableData",
-  deleteRecordAJAXUrl: globalRootUrl + idUrl + "/delete",
+  saveTableAJAXUrl: window.location.origin + globalRootUrl + idUrl + "/saveTableData",
+  deleteRecordAJAXUrl: window.location.origin + globalRootUrl + idUrl + "/delete",
   $disabilityFields: $('#' + idForm + '  .disability'),
   $statusToggle: $('#module-status-toggle'),
   $moduleStatus: $('#status'),
@@ -56,13 +56,15 @@ var ModuleQualityAssessment = {
    */
   initialize: function initialize() {
     // инициализируем чекбоксы и выподающие менюшки
-    window[className].$checkBoxes.checkbox();
+    window[className].$checkBoxes.checkbox({
+      onChange: window[className].onChangeSettings
+    });
     window[className].$dropDowns.dropdown();
     window[className].checkStatusToggle();
     window.addEventListener('ModuleStatusChanged', window[className].checkStatusToggle);
     window[className].initializeForm();
     $('.menu .item').tab();
-    $.get(idUrl + '/getTablesDescription', function (result) {
+    $.get(window.location.origin + globalRootUrl + idUrl + '/getTablesDescription', function (result) {
       for (var key in result['data']) {
         var tableName = key + '-table';
 
@@ -74,6 +76,15 @@ var ModuleQualityAssessment = {
       }
     });
   },
+  onChangeSettings: function onChangeSettings() {
+    if ($('#useTts').parent().checkbox('is checked')) {
+      $('td [colname=soundFileId]').parents('td').removeClass('warning');
+      $('td [colname=textQuestions]').parents('td').addClass('warning');
+    } else {
+      $('td [colname=soundFileId]').parents('td').addClass('warning');
+      $('td [colname=textQuestions]').parents('td').removeClass('warning');
+    }
+  },
 
   /**
    * Подготавливает список выбора
@@ -81,18 +92,28 @@ var ModuleQualityAssessment = {
    * @returns {[]}
    */
   makeDropdownList: function makeDropdownList(selectType, selected) {
-    var values = [{
-      name: ' --- ',
-      value: '',
-      selected: '' === selected
-    }];
+    var values = [];
+    var haveEmpty = false;
     $('#' + selectType + ' option').each(function (index, obj) {
+      if (haveEmpty === false) {
+        haveEmpty = obj.value.trim() === '';
+      }
+
       values.push({
         name: obj.text,
         value: obj.value,
         selected: selected === obj.value
       });
     });
+
+    if (haveEmpty === false) {
+      values.unshift({
+        name: ' --- ',
+        value: '',
+        selected: '' === selected
+      });
+    }
+
     return values;
   },
 
@@ -127,7 +148,7 @@ var ModuleQualityAssessment = {
 
     $('#' + tableName).DataTable({
       ajax: {
-        url: idUrl + options.ajaxUrl + '?table=' + tableName.replace('-table', ''),
+        url: window.location.origin + globalRootUrl + idUrl + options.ajaxUrl + '?table=' + tableName.replace('-table', ''),
         dataSrc: 'data'
       },
       columns: columns,
@@ -201,6 +222,7 @@ var ModuleQualityAssessment = {
        */
       drawCallback: function drawCallback(settings) {
         window[className].drowSelectGroup(settings.sTableId);
+        window[className].onChangeSettings();
       }
     });
     var body = $('body'); // Клик по полю. Вход для редактирования значения.

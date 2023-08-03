@@ -22,7 +22,17 @@ return [
 	'mo_ModuleModuleQualityAssessment'   => 'Модуль шаблон',
     'BreadcrumbModuleQualityAssessment'  => 'Шаблонный модуль',
     'SubHeaderModuleQualityAssessment'   => 'Пример для создания собственных модулей',
-    'module_template_AddNewRecord'  => 'Добавить',
+    'module_template_AddNewRecord'       => 'Добавить',
+    'module_quality_useTts'              => 'Использовать Yandex TTS',
+    'module_quality_yandexApiKey'        => 'Yandex API Key',
+    'module_quality_TextQuestion'        => 'Текст вопроса для генерации',
+    'module_quality_SoundFile'           => 'Аудио файл',
+    'module_quality_Role'                => 'Роль',
+
+    'module_quality_ROLE_START'          => 'Приветствие',
+    'module_quality_ROLE_QUESTION'       => 'Вопрос',
+    'module_quality_ROLE_END'            => 'Завершающее аудио',
+
     'module_quality_assessmentTextFieldLabel'        => 'Пример текстового поля',
     'module_quality_assessmentTextAreaFieldLabel'    => 'Пример многостраничного поля',
     'module_quality_assessmentPasswordFieldLabel'    => 'Пример поля с паролем',
@@ -42,5 +52,8 @@ return [
     'module_quality_assessmentAdditionalTabContent'  => 'Эта вкладка сгенерирована из Шаблонного модуля',
     'module_quality_assessmentAdditionalMenuItem'    => 'Пример дополнительного пункта меню',
     'module_quality_assessmentAdditionalSubMenuItem' => 'Пример подменю с отдельной страницей'
+
+
+
 
 ];
