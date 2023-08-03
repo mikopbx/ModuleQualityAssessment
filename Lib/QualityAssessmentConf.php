@@ -154,7 +154,7 @@ class QualityAssessmentConf extends ConfigClass
         $conf .= "[ivr-quality]".PHP_EOL;
         $conf .= 'exten => s,1,NoOP( start ivr quality )' . PHP_EOL."\t";
         $conf .= 'same => n,Set(f_num=$[${f_num} + 1])' . PHP_EOL."\t";
-        $conf .= 'same => n,Set(filename=${filename_${f_num}}' . PHP_EOL."\t";
+        $conf .= 'same => n,Set(filename=${filename_${f_num}})' . PHP_EOL."\t";
         $conf .= 'same => n,GotoIf($["x${filename}" == "x"]?ivr-quality,bye,1);' . PHP_EOL."\t";
         $conf .= 'same => n,Background(${filename})' . PHP_EOL."\t";
         $conf .= 'same => n,WaitExten(5)' . PHP_EOL;
