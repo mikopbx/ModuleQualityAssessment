@@ -19,20 +19,18 @@
  */
 
 use MikoPBX\Core\Asterisk\AGI;
-use MikoPBX\Core\System\Util;
+use Modules\ModuleQualityAssessment\Models\QuestionResults;
+use Modules\ModuleQualityAssessment\bin\ConnectorDB;
 require_once 'Globals.php';
 
-$agi 		= new AGI();
-$linkedId   = $agi->get_variable('CDR(linkedid)', true);
-$arr = [
-    'quality'   => $agi->request['agi_extension'],
-    'f_num'     => $agi->get_variable('f_num', true),
-    'filename'  => $agi->get_variable('filename', true),
-    'linkedid'  => $linkedId,
-    'date'      => date('Y-m-d H:i:s'),
-    'callerid'  => $agi->request['agi_callerid']
-];
+$agi    = new AGI();
 
-$file_log = '/storage/usbdisk1/quality/'.$linkedId.'.log';
-Util::mwMkdir(dirname($file_log));
-file_put_contents($file_log, json_encode($arr)."\n", FILE_APPEND);
+$result = new QuestionResults();
+$result->filename = $agi->get_variable('filename', true);
+$result->changeTime = time();
+$result->quality    = $agi->request['agi_extension'];
+$result->f_num      = $agi->get_variable('f_num', true);
+$result->linkedid   = $agi->get_variable('CDR(linkedid)', true);
+$result->callerid   = $agi->request['agi_callerid'];
+
+ConnectorDB::invoke('saveQuality', [$result->toArray()],false);

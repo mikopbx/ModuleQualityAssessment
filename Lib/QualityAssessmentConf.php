@@ -19,16 +19,13 @@
 
 namespace Modules\ModuleQualityAssessment\Lib;
 
-use MikoPBX\AdminCabinet\Forms\ExtensionEditForm;
-use MikoPBX\Common\Models\PbxSettings;
 use MikoPBX\Core\System\PBX;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
-use Phalcon\Forms\Element\Select;
-use Phalcon\Forms\Form;
-use Phalcon\Mvc\Controller;
-use Phalcon\Mvc\View;
+use Modules\ModuleQualityAssessment\bin\ConnectorDB;
+use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
+use Modules\ModuleQualityAssessment\Models\QuestionsList;
 
 class QualityAssessmentConf extends ConfigClass
 {
@@ -40,6 +37,9 @@ class QualityAssessmentConf extends ConfigClass
      */
     public function modelsEventChangeData($data): void
     {
+        if (in_array($data['model'], [ModuleQualityAssessment::class, QuestionsList::class], true ) ){
+            PBX::dialplanReload();
+        }
     }
 
     /**
@@ -49,7 +49,12 @@ class QualityAssessmentConf extends ConfigClass
      */
     public function getModuleWorkers(): array
     {
-        return [];
+        return [
+            [
+                'type'           => WorkerSafeScriptsCore::CHECK_BY_BEANSTALK,
+                'worker'         => ConnectorDB::class,
+            ],
+        ];
     }
 
     /**
@@ -81,7 +86,6 @@ class QualityAssessmentConf extends ConfigClass
 
         return $res;
     }
-
 
     /**
      * Prepares additional parameters for each incoming context
@@ -119,31 +123,37 @@ class QualityAssessmentConf extends ConfigClass
      */
     public function extensionGenContexts(): string
     {
-        // Generate internal numbering plan.
+        $files = ConnectorDB::invoke('getQuestionFiles', [$this->moduleDir]);
+
         $conf = PHP_EOL."[quality-start]".PHP_EOL;
         $conf .= 'exten => _.!,1,NoOp(--- Quality assessment ---)' . PHP_EOL."\t";
         $conf .= 'same => n,ExecIf($[${M_DIALSTATUS}!=ANSWER]?return)'.PHP_EOL."\t";
-        $conf .= 'same => n,Set(filename_bye=/storage/usbdisk1/quality/sounds/bye)'.PHP_EOL."\t";
-        $conf .= 'same => n,Set(filename_1=/root/59ff28a873e338ee2709c47debf9753f)'.PHP_EOL."\t";
-        $conf .= 'same => n,Set(filename_2=/root/91f03db4c7a73b88a49d25c60d755a0e)'.PHP_EOL."\t";
+        foreach ($files[QuestionsList::ROLE_START] as $file){
+            $conf .= "same => n,Playback($file)" . PHP_EOL."\t";
+        }
+        $ch = 1;
+        foreach ($files[QuestionsList::ROLE_QUESTION] as $file){
+            $conf .= "same => n,Set(filename_{$ch}={$file})".PHP_EOL."\t";
+            $ch++;
+        }
         $conf .= 'same => n,Set(f_num=0);'.PHP_EOL."\t";
         $conf .= 'same => n,Goto(ivr-quality,s,1)'.PHP_EOL.PHP_EOL;
 
-        $conf .= PHP_EOL."[ivr-quality]".PHP_EOL;
+        $conf .= "[ivr-quality]".PHP_EOL;
         $conf .= 'exten => s,1,NoOP( start ivr quality )' . PHP_EOL."\t";
         $conf .= 'same => n,Set(f_num=$[${f_num} + 1])' . PHP_EOL."\t";
         $conf .= 'same => n,Set(filename=${filename_${f_num}}' . PHP_EOL."\t";
         $conf .= 'same => n,GotoIf($["x${filename}" == "x"]?ivr-quality,bye,1);' . PHP_EOL."\t";
         $conf .= 'same => n,Background(${filename})' . PHP_EOL."\t";
-        $conf .= 'same => n,WaitExten(5)' . PHP_EOL.PHP_EOL;
-
+        $conf .= 'same => n,WaitExten(5)' . PHP_EOL;
         $conf .= 'exten => _[1-5],1,NoOP( quality is ${EXTEN})' . PHP_EOL."\t";
         $conf .= "same => n,AGI({$this->moduleDir}/agi-bin/quality_agi.php)" . PHP_EOL."\t";
-        $conf .= 'same => n,Goto(ivr-quality,s,1)' . PHP_EOL.PHP_EOL;
-
-        $conf .= 'exten => _[06-9],Goto(ivr-quality,s,1)' . PHP_EOL.PHP_EOL;
-
-        $conf .= 'exten => bye,1,ExecIf($["x${filename_bye}" != "x"]?Playback(${filename_bye}));' . PHP_EOL."\t";
+        $conf .= 'same => n,Goto(ivr-quality,s,1)' . PHP_EOL;
+        $conf .= 'exten => _[06-9],Goto(ivr-quality,s,1)' . PHP_EOL;
+        $conf .= 'exten => bye,1,NoOp' . PHP_EOL."\t";
+        foreach ($files[QuestionsList::ROLE_END] as $file){
+            $conf .= "same => n,Playback($file)" . PHP_EOL."\t";
+        }
         $conf .= 'same => n,Hangup()' . PHP_EOL.PHP_EOL;
         return $conf;
     }
