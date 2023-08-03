@@ -18,10 +18,10 @@
  */
 
 return [
-	'repModuleQualityAssessment'         => 'Модуль шаблон - %repesent%',
-	'mo_ModuleModuleQualityAssessment'   => 'Модуль шаблон',
-    'BreadcrumbModuleQualityAssessment'  => 'Шаблонный модуль',
-    'SubHeaderModuleQualityAssessment'   => 'Пример для создания собственных модулей',
+	'repModuleQualityAssessment'         => 'Оценка качества обслуживания - %repesent%',
+	'mo_ModuleModuleQualityAssessment'   => 'Оценка качества обслуживания',
+    'BreadcrumbModuleQualityAssessment'  => 'Оценка качества обслуживания',
+    'SubHeaderModuleQualityAssessment'   => 'IVR меню для оценки качества после разговора',
     'module_template_AddNewRecord'       => 'Добавить',
     'module_quality_useTts'              => 'Использовать Yandex TTS',
     'module_quality_yandexApiKey'        => 'Yandex API Key',

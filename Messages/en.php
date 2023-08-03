@@ -18,20 +18,5 @@
  */
 
 return [
-	'repModuleQualityAssessment'       => 'Module template - %repesent%',
-	'mo_ModuleModuleQualityAssessment' => 'Module template',
-    'BreadcrumbModuleQualityAssessment'=> 'Template module',
-    'SubHeaderModuleQualityAssessment' => 'Example to create own modules',
-    'module_template_AddNewRecord'  => 'Add new',
-    'module_quality_assessmentTextFieldLabel'        => 'Text field example',
-    'module_quality_assessmentTextAreaFieldLabel'    => 'TextArea field example',
-    'module_quality_assessmentPasswordFieldLabel'    => 'Password field example',
-    'module_quality_assessmentIntegerFieldLabel'     => 'Integer field example',
-    'module_quality_assessmentCheckBoxFieldLabel'    => 'CheckBox',
-    'module_quality_assessmentToggleFieldLabel'      => 'Toggle',
-    'module_quality_assessmentDropDownFieldLabel'    => 'Dropdown menu',
-    'module_quality_assessmentValidateValueIsEmpty'  => 'Check the field, it looks like empty',
-    'module_quality_assessmentConnected'             => 'Module connected',
-    'module_quality_assessmentDisconnected'          => 'Module disconnected',
-    'module_quality_assessmentUpdateStatus'          => 'Update module status',
+
 ];

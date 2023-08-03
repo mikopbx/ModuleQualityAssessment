@@ -32,7 +32,6 @@ class ModuleQualityAssessment extends ModulesModelsBase
     public $id;
 
     /**
-     * CheckBox
      *
      * @Column(type="integer", default="0", nullable=true)
      */
