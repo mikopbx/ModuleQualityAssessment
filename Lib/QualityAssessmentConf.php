@@ -26,6 +26,7 @@ use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
 use Modules\ModuleQualityAssessment\bin\ConnectorDB;
 use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
 use Modules\ModuleQualityAssessment\Models\QuestionsList;
+use Modules\ModuleQualityAssessment\Lib\RestAPI\Controllers\ApiController;
 
 class QualityAssessmentConf extends ConfigClass
 {
@@ -54,6 +55,17 @@ class QualityAssessmentConf extends ConfigClass
                 'type'           => WorkerSafeScriptsCore::CHECK_BY_BEANSTALK,
                 'worker'         => ConnectorDB::class,
             ],
+        ];
+    }
+
+    /**
+     * REST API модуля.
+     * @return array[]
+     */
+    public function getPBXCoreRESTAdditionalRoutes(): array
+    {
+        return [
+            [ApiController::class, 'getResultsAction', '/pbxcore/api/module-quality-assessment/v1/results/{changeTime}', 'get', '/', false],
         ];
     }
 

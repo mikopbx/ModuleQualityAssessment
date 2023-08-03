@@ -129,6 +129,28 @@ class ConnectorDB extends WorkerBase
     }
 
     /**
+     * Возвращает результат обзвона, только изменненые данные.
+     * @param $changeTime
+     * @return array
+     */
+    public function getResults($changeTime):array
+    {
+        $res = new PBXApiResult();
+        $res->success = true;
+        $filter = [
+            'conditions' => 'changeTime > :changeTime:',
+            'limit' => 1000,
+            'bind' => [
+                'changeTime' => $changeTime,
+            ],
+            'order' => 'changeTime'
+        ];
+        $res->data['results'] = QuestionResults::find($filter)->toArray();
+        return $res->getResult();
+
+    }
+
+    /**
      * Выполнение меодов worker, запущенного в другом процессе.
      * @param string $function
      * @param array $args
