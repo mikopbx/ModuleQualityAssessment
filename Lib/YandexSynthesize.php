@@ -24,7 +24,6 @@ class YandexSynthesize
 {
     private string $ttsDir;
     private string $apiKey;
-    private string $voice = 'alena';
 
     /**
      * Инициализация класса.
