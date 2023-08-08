@@ -19,13 +19,10 @@
 
 namespace Modules\ModuleQualityAssessment\bin;
 
-use MikoPBX\Common\Models\SoundFiles;
-use MikoPBX\Core\System\Util;
 use MikoPBX\Core\Workers\WorkerBase;
 use MikoPBX\Core\System\BeanstalkClient;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
 use Modules\ModuleAutoDialer\Lib\Logger;
-use Modules\ModuleQualityAssessment\Lib\YandexSynthesize;
 use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
 use Modules\ModuleQualityAssessment\Models\QuestionResults;
 use Modules\ModuleQualityAssessment\Models\QuestionsList;
@@ -95,37 +92,6 @@ class ConnectorDB extends WorkerBase
             $qResult->writeAttribute($key, $value);
         }
         $qResult->save();
-    }
-
-    /**
-     * @param string $moduleDir
-     * @return array
-     */
-    public function getQuestionFiles(string $moduleDir): array
-    {
-        $files = [];
-        $settings = ModuleQualityAssessment::findFirst();
-        if ($settings) {
-
-            $ys = new YandexSynthesize("{$moduleDir}/db/tts", $settings->yandexApiKey);
-            /** @var QuestionsList $question */
-            $questions = QuestionsList::find(['order' => 'priority']);
-            foreach ($questions as $question) {
-                $filename = '';
-                if ($settings->useTts === '1') {
-                    $filename = $ys->makeSpeechFromText($question->textQuestions);
-                } else {
-                    $soundFile = SoundFiles::findFirstById($question->soundFileId);
-                    if ($soundFile) {
-                        $filename = $soundFile->path;
-                    }
-                }
-                if (file_exists($filename)) {
-                    $files[''.$question->role][] = Util::trimExtensionForFile($filename);
-                }
-            }
-        }
-        return $files;
     }
 
     /**

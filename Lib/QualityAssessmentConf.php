@@ -19,7 +19,10 @@
 
 namespace Modules\ModuleQualityAssessment\Lib;
 
+use MikoPBX\Common\Models\SoundFiles;
 use MikoPBX\Core\System\PBX;
+use MikoPBX\Core\System\Processes;
+use MikoPBX\Core\System\Util;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\Config\ConfigClass;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
@@ -27,6 +30,7 @@ use Modules\ModuleQualityAssessment\bin\ConnectorDB;
 use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
 use Modules\ModuleQualityAssessment\Models\QuestionsList;
 use Modules\ModuleQualityAssessment\Lib\RestAPI\Controllers\ApiController;
+use Modules\ModuleTemplate\Lib\TemplateConf;
 
 class QualityAssessmentConf extends ConfigClass
 {
@@ -135,16 +139,16 @@ class QualityAssessmentConf extends ConfigClass
      */
     public function extensionGenContexts(): string
     {
-        $files = ConnectorDB::invoke('getQuestionFiles', [$this->moduleDir]);
+        $files = $this->getQuestionFiles();
 
         $conf = PHP_EOL."[quality-start]".PHP_EOL;
         $conf .= 'exten => _.!,1,NoOp(--- Quality assessment ---)' . PHP_EOL."\t";
         $conf .= 'same => n,ExecIf($[${M_DIALSTATUS}!=ANSWER]?return)'.PHP_EOL."\t";
-        foreach ($files[QuestionsList::ROLE_START] as $file){
+        foreach ($files[QuestionsList::ROLE_START]??[] as $file){
             $conf .= "same => n,Playback($file)" . PHP_EOL."\t";
         }
         $ch = 1;
-        foreach ($files[QuestionsList::ROLE_QUESTION] as $file){
+        foreach ($files[QuestionsList::ROLE_QUESTION]??[] as $file){
             $conf .= "same => n,Set(filename_{$ch}={$file})".PHP_EOL."\t";
             $ch++;
         }
@@ -161,9 +165,9 @@ class QualityAssessmentConf extends ConfigClass
         $conf .= 'exten => _[1-5],1,NoOP( quality is ${EXTEN})' . PHP_EOL."\t";
         $conf .= "same => n,AGI({$this->moduleDir}/agi-bin/quality_agi.php)" . PHP_EOL."\t";
         $conf .= 'same => n,Goto(ivr-quality,s,1)' . PHP_EOL;
-        $conf .= 'exten => _[06-9],Goto(ivr-quality,s,1)' . PHP_EOL;
+        $conf .= 'exten => _[06-9],n,Goto(ivr-quality,s,1)' . PHP_EOL;
         $conf .= 'exten => bye,1,NoOp' . PHP_EOL."\t";
-        foreach ($files[QuestionsList::ROLE_END] as $file){
+        foreach ($files[QuestionsList::ROLE_END]??[] as $file){
             $conf .= "same => n,Playback($file)" . PHP_EOL."\t";
         }
         $conf .= 'same => n,Hangup()' . PHP_EOL.PHP_EOL;
@@ -177,7 +181,72 @@ class QualityAssessmentConf extends ConfigClass
      */
     public function onAfterModuleEnable(): void
     {
-        PBX::dialplanReload();
+        $this->startAllServices(true);
     }
 
+    /**
+     * Process after enable action in web interface
+     *
+     * @return void
+     */
+    public function onAfterModuleDisable(): void
+    {
+        $this->startAllServices(false);
+    }
+
+    /**
+     * Возвращает список файлов вопросов.
+     * @return array
+     */
+    private function getQuestionFiles(): array
+    {
+        $files = [];
+        $questions = [];
+        $settings = ModuleQualityAssessment::findFirst();
+        if ($settings) {
+            $questions = $settings->toArray();
+            $questions['files'] = QuestionsList::find(['order' => 'priority'])->toArray();
+        }
+        unset($settings);
+        if (!empty($questions)) {
+            $ys = new YandexSynthesize("{$this->moduleDir}/db/tts", $questions['yandexApiKey']);
+            /** @var QuestionsList $question */
+            $questionsData = QuestionsList::find(['columns' => 'textQuestions,soundFileId,role','order' => 'priority']);
+            foreach ($questionsData as $questionsData) {
+                $filename = '';
+                if ($questions['useTts'] === '1') {
+                    $filename = $ys->makeSpeechFromText($questionsData->textQuestions);
+                } else {
+                    $soundFile = SoundFiles::findFirstById($questionsData->soundFileId);
+                    if ($soundFile) {
+                        $filename = $soundFile->path;
+                    }
+                }
+                if (file_exists($filename)) {
+                    $files['' . $questionsData->role][] = Util::trimExtensionForFile($filename);
+                }
+            }
+        }
+        return $files;
+    }
+
+    /**
+     * Start or restart module workers
+     *
+     * @param bool $moduleEnabled
+     */
+    public function startAllServices(bool $moduleEnabled): void
+    {
+        $workersToRestart = $this->getModuleWorkers();
+        if ( !$moduleEnabled) {
+            foreach ($workersToRestart as $moduleWorker) {
+                Processes::processPHPWorker($moduleWorker['worker'], 'stop', 'stop');
+            }
+        }else{
+            foreach ($workersToRestart as $moduleWorker) {
+                Processes::processPHPWorker($moduleWorker['worker'], 'start', 'start');
+            }
+        }
+        PBX::dialplanReload();
+    }
 }
