@@ -143,7 +143,7 @@ class QualityAssessmentConf extends ConfigClass
 
         $conf = PHP_EOL."[quality-start]".PHP_EOL;
         $conf .= 'exten => _.!,1,NoOp(--- Quality assessment ---)' . PHP_EOL."\t";
-        $conf .= 'same => n,ExecIf($[${M_DIALSTATUS}!=ANSWER]?return)'.PHP_EOL."\t";
+        $conf .= 'same => n,ExecIf($["${FROM_DID}x" != "x" && "${M_DIALSTATUS}" != "ANSWER"]?return)'.PHP_EOL."\t";
         foreach ($files[QuestionsList::ROLE_START]??[] as $file){
             $conf .= "same => n,Playback($file)" . PHP_EOL."\t";
         }
@@ -161,11 +161,11 @@ class QualityAssessmentConf extends ConfigClass
         $conf .= 'same => n,Set(filename=${filename_${f_num}})' . PHP_EOL."\t";
         $conf .= 'same => n,GotoIf($["x${filename}" == "x"]?ivr-quality,bye,1);' . PHP_EOL."\t";
         $conf .= 'same => n,Background(${filename})' . PHP_EOL."\t";
-        $conf .= 'same => n,WaitExten(5)' . PHP_EOL;
+        $conf .= 'same => n,WaitExten(10)' . PHP_EOL;
         $conf .= 'exten => _[1-5],1,NoOP( quality is ${EXTEN})' . PHP_EOL."\t";
         $conf .= "same => n,AGI({$this->moduleDir}/agi-bin/quality_agi.php)" . PHP_EOL."\t";
         $conf .= 'same => n,Goto(ivr-quality,s,1)' . PHP_EOL;
-        $conf .= 'exten => _[06-9],n,Goto(ivr-quality,s,1)' . PHP_EOL;
+        $conf .= 'exten => _[06-9t],1,Goto(ivr-quality,s,1)' . PHP_EOL;
         $conf .= 'exten => bye,1,NoOp' . PHP_EOL."\t";
         foreach ($files[QuestionsList::ROLE_END]??[] as $file){
             $conf .= "same => n,Playback($file)" . PHP_EOL."\t";

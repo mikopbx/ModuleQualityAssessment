@@ -22,10 +22,8 @@ namespace Modules\ModuleQualityAssessment\bin;
 use MikoPBX\Core\Workers\WorkerBase;
 use MikoPBX\Core\System\BeanstalkClient;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
-use Modules\ModuleAutoDialer\Lib\Logger;
-use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
+use Modules\ModuleQualityAssessment\Lib\Logger;
 use Modules\ModuleQualityAssessment\Models\QuestionResults;
-use Modules\ModuleQualityAssessment\Models\QuestionsList;
 
 require_once 'Globals.php';
 
