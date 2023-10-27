@@ -34,9 +34,9 @@ class ConnectorDB extends WorkerBase
     /**
      * Старт работы листнера.
      *
-     * @param $params
+     * @param $argv
      */
-    public function start($params):void
+    public function start($argv):void
     {
         $this->logger   = new Logger('ConnectorDB', 'ModuleQualityAssessment');
         $this->logger->writeInfo('Starting...');
