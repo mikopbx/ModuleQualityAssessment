@@ -18,22 +18,26 @@
  */
 
 namespace Modules\ModuleQualityAssessment\Lib;
+use GuzzleHttp\Client;
 use MikoPBX\Core\System\Util;
 
 class YandexSynthesize
 {
     private string $ttsDir;
     private string $apiKey;
+    private string $folderId;
 
     /**
      * Инициализация класса.
      * @param string $ttsDir
      * @param string $apiKey
      */
-    public function __construct(string $ttsDir, string $apiKey)
+    public function __construct(string $ttsDir, string $apiKey, string $folderId='')
     {
         $this->apiKey = $apiKey;
         $this->ttsDir = $ttsDir;
+        $this->folderId = $folderId;
+
         if(!file_exists($this->ttsDir)){
             Util::mwMkdir($this->ttsDir);
         }
@@ -95,5 +99,37 @@ class YandexSynthesize
             @unlink($fullFileNameFromService);
         }
         return null;
+    }
+
+    /**
+     * Преобразование речи в текст.
+     * @param string $pathToFile
+     * @return string
+     */
+    public function getTextFromSpeech(string $pathToFile):string
+    {
+        $result = '';
+        $client = new Client();
+        try {
+            $response = $client->post('https://stt.api.cloud.yandex.net/speech/v1/stt:recognize', [
+                'headers' => [
+                    'Authorization' => 'Api-Key '.$this->apiKey,
+                ],
+                'query' => [
+                    'lang' => 'ru-RU',
+                    'folderId' => $this->folderId,
+                    'format' => 'lpcm',
+                    'sampleRateHertz' => 8000,
+                    'topic' => 'general:rc',
+                ],
+                'body' => fopen($pathToFile, 'rb'),
+            ]);
+            if ($response->getStatusCode() === 200) {
+                $result = json_decode($response->getBody()->getContents(), true)['result']??'';
+            }
+        }catch (\GuzzleHttp\Exception\GuzzleException $e){
+            Util::sysLogMsg('getTextFromSpeech', $e->getMessage());
+        }
+        return $result;
     }
 }

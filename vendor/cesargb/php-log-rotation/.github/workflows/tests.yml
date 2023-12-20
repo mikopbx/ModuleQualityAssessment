@@ -8,14 +8,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4, 8.0, 8.1]
+                php: [8.2, 8.1, 8.0, 7.4]
 
         name: P${{ matrix.php }}
 
         steps:
-            - name: Update apt
-              run: sudo apt-get update --fix-missing
-
             - name: Checkout code
               uses: actions/checkout@v2
 
@@ -23,11 +20,11 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, exif
                   coverage: none
 
             - name: Install dependencies
               run: |
-                  composer update --no-interaction --no-suggest
+                  composer update --prefer-dist --no-interaction
+                  
             - name: Execute tests
-              run: vendor/bin/phpunit
+              run: composer test

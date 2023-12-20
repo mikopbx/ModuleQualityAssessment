@@ -33,6 +33,22 @@ return [
     'module_quality_ROLE_QUESTION'       => 'Вопрос',
     'module_quality_ROLE_END'            => 'Завершающее аудио',
 
+    'module_quality_ttsEngine'           => 'Сервис распознавания речи',
+    'module_quality_yandexFolderId'      => 'Yandex folder id',
+    'module_quality_tinkoffApiKey'       => 'Tinkoff Api Key',
+    'module_quality_tinkoffSecretKey'    => 'Tinkoff Secret Key',
+    'module_quality_Questions'           => 'Вопросы',
+    'module_quality_ApiKeys'             => 'Подключение к Speech Kit API',
+
+    'module_quality_сontrol_phrases'     => 'Контрольные фразы',
+    'module_quality_pressed1'            => 'Нажатие цифры 1 (Ужасно)',
+    'module_quality_pressed2'            => 'Нажатие цифры 2 (Плохо)',
+    'module_quality_pressed3'            => 'Нажатие цифры 3 (Нормально)',
+    'module_quality_pressed4'            => 'Нажатие цифры 4 (Хорошо)',
+    'module_quality_pressed5'            => 'Нажатие цифры 5 (Отлично)',
+    'module_quality_attention'           => 'Внимание',
+    'module_quality_attention_text'      => 'Укажите через пробел ключевые слова, которые будут соответствовать каждой из оценок от 1 до 5',
+
     'module_quality_assessmentTextFieldLabel'        => 'Пример текстового поля',
     'module_quality_assessmentTextAreaFieldLabel'    => 'Пример многостраничного поля',
     'module_quality_assessmentPasswordFieldLabel'    => 'Пример поля с паролем',

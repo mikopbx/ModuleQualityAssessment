@@ -4,12 +4,16 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitdb0e7f5f4867f1094b5c4c69668744f9
+class ComposerStaticInitc4d0fb4317a7b466670adb2b90a5f9d9
 {
+    public static $files = array (
+        'a867db2257185343a013201ba05575b6' => __DIR__ . '/..' . '/keinos/mb_levenshtein/mb_levenshtein.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'M' => 
         array (
-            'Modules\\ModuleTemplate\\' => 23,
+            'Modules\\ModuleQualityAssessment\\' => 32,
         ),
         'C' => 
         array (
@@ -18,7 +22,7 @@ class ComposerStaticInitdb0e7f5f4867f1094b5c4c69668744f9
     );
 
     public static $prefixDirsPsr4 = array (
-        'Modules\\ModuleTemplate\\' => 
+        'Modules\\ModuleQualityAssessment\\' => 
         array (
             0 => '/',
         ),
@@ -35,9 +39,9 @@ class ComposerStaticInitdb0e7f5f4867f1094b5c4c69668744f9
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitdb0e7f5f4867f1094b5c4c69668744f9::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitdb0e7f5f4867f1094b5c4c69668744f9::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitdb0e7f5f4867f1094b5c4c69668744f9::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitc4d0fb4317a7b466670adb2b90a5f9d9::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitc4d0fb4317a7b466670adb2b90a5f9d9::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitc4d0fb4317a7b466670adb2b90a5f9d9::$classMap;
 
         }, null, ClassLoader::class);
     }

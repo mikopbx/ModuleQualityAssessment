@@ -2,7 +2,8 @@
     "name": "mikopbx/moduletemplate",
     "description": "ModuleQualityAssessment",
     "require": {
-        "mikopbx/core": ">=2020.2.757"
+        "keinos/mb_levenshtein": "=1.0.1",
+        "cesargb/php-log-rotation": "=2.6.0"
     },
     "autoload": {
         "psr-4": {

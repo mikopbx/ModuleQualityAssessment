@@ -25,7 +25,7 @@ use Cesargb\Log\Rotation;
 use Cesargb\Log\Exceptions\RotationFailed;
 
 require_once('Globals.php');
-require_once(dirname(__DIR__).'/vendor/autoload.php');
+require_once(dirname(__DIR__) . '/vendor/autoload.php');
 
 class Logger
 {

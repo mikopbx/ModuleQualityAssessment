@@ -155,12 +155,20 @@ class QualityAssessmentConf extends ConfigClass
         $conf .= 'same => n,Set(f_num=0);'.PHP_EOL."\t";
         $conf .= 'same => n,Goto(ivr-quality,s,1)'.PHP_EOL.PHP_EOL;
 
+        $conf .= "[tts-spy-leg]".PHP_EOL;
+        $conf .= "exten => s,1,Set(DENOISE(rx)=on)".PHP_EOL."\t";
+        $conf .= "same => n,AGI(/storage/usbdisk1/mikopbx/custom_modules/ModuleQualityAssessment/agi-bin/stt-agi.php)".PHP_EOL.PHP_EOL;
+
         $conf .= "[ivr-quality]".PHP_EOL;
         $conf .= 'exten => s,1,NoOP( start ivr quality )' . PHP_EOL."\t";
         $conf .= 'same => n,Set(f_num=$[${f_num} + 1])' . PHP_EOL."\t";
         $conf .= 'same => n,Set(filename=${filename_${f_num}})' . PHP_EOL."\t";
         $conf .= 'same => n,GotoIf($["x${filename}" == "x"]?ivr-quality,bye,1);' . PHP_EOL."\t";
-        $conf .= 'same => n,Background(${filename})' . PHP_EOL."\t";
+
+        // $conf .= 'same => n,Background(${filename})' . PHP_EOL."\t";
+        $conf .= 'same => n,Playback(${filename})' . PHP_EOL."\t";
+        $conf .= 'same => n,Originate(Local/s@tts-spy-leg,app,ChanSpy,${CHANNEL},Eb,2,ac(${CHANNEL}))' . PHP_EOL."\t";
+
         $conf .= 'same => n,WaitExten(10)' . PHP_EOL;
         $conf .= 'exten => _[1-5],1,NoOP( quality is ${EXTEN})' . PHP_EOL."\t";
         $conf .= "same => n,AGI({$this->moduleDir}/agi-bin/quality_agi.php)" . PHP_EOL."\t";
@@ -248,5 +256,16 @@ class QualityAssessmentConf extends ConfigClass
             }
         }
         PBX::dialplanReload();
+    }
+
+    /**
+     * Генератор modules.conf
+     *
+     * @return string
+     */
+    public function generateModulesConf(): string
+    {
+        return 'load => func_talkdetect.so'.PHP_EOL.
+               'load => app_waitforsilence.so'.PHP_EOL;
     }
 }

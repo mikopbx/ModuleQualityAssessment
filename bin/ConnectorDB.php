@@ -23,6 +23,7 @@ use MikoPBX\Core\Workers\WorkerBase;
 use MikoPBX\Core\System\BeanstalkClient;
 use MikoPBX\PBXCoreREST\Lib\PBXApiResult;
 use Modules\ModuleQualityAssessment\Lib\Logger;
+use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
 use Modules\ModuleQualityAssessment\Models\QuestionResults;
 
 require_once 'Globals.php';
@@ -142,6 +143,20 @@ class ConnectorDB extends WorkerBase
         }
         return $object;
     }
+
+    /**
+     * Возвращает настройки модуля.
+     * @return void
+     */
+    public function getSettings():array
+    {
+        $settings = ModuleQualityAssessment::findFirst();
+        if(!$settings){
+            $settings = new ModuleQualityAssessment();
+        }
+        return $settings->toArray();
+    }
+
 }
 
 

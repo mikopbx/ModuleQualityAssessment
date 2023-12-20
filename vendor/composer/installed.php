@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
-        'name' => 'mikopbx/moduleamocrm',
+        'name' => 'mikopbx/moduletemplate',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => 'f1e41869d658e9dcc585262ab292118c924bff9e',
+        'reference' => '0d084186cbcf5f2eda6bc6ad6da6b5c62e13e3b0',
         'type' => 'application',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,18 +11,27 @@
     ),
     'versions' => array(
         'cesargb/php-log-rotation' => array(
-            'pretty_version' => '2.5.0',
-            'version' => '2.5.0.0',
-            'reference' => '066355e781638e435a045a82977b799d4cdcbfce',
+            'pretty_version' => '2.6.0',
+            'version' => '2.6.0.0',
+            'reference' => '01f508cce747f826b2c0a3348b3b651305bf6a50',
             'type' => 'library',
             'install_path' => __DIR__ . '/../cesargb/php-log-rotation',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'mikopbx/moduleamocrm' => array(
+        'keinos/mb_levenshtein' => array(
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => '8927650e0338499d4f3a76a71a0b72cb116a25d9',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../keinos/mb_levenshtein',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'mikopbx/moduletemplate' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => 'f1e41869d658e9dcc585262ab292118c924bff9e',
+            'reference' => '0d084186cbcf5f2eda6bc6ad6da6b5c62e13e3b0',
             'type' => 'application',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

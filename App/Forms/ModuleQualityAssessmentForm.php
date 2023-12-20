@@ -19,6 +19,7 @@
 
 namespace Modules\ModuleQualityAssessment\App\Forms;
 
+use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
 use Phalcon\Forms\Form;
 use Phalcon\Forms\Element\Text;
 use Phalcon\Forms\Element\Numeric;
@@ -35,10 +36,38 @@ class ModuleQualityAssessmentForm extends Form
     {
         $this->add(new Hidden('id', ['value' => $entity->id]));
         $this->add(new Text('yandexApiKey'));
+        $this->add(new Text('yandexFolderId'));
+        $this->add(new Text('tinkoffApiKey'));
+        $this->add(new Text('tinkoffSecretKey'));
+
+        $this->add(new Text('pressed1'));
+        $this->add(new Text('pressed2'));
+        $this->add(new Text('pressed3'));
+        $this->add(new Text('pressed4'));
+        $this->add(new Text('pressed5'));
+
         $useTts = ['value' => null];
         if ($entity->useTts === '1') {
             $useTts = ['checked' => 'checked', 'value' => null];
         }
         $this->add(new Check('useTts', $useTts));
+
+        $arrLibraryType = [
+            ModuleQualityAssessment::TTS_NONE => ModuleQualityAssessment::TTS_NONE,
+            ModuleQualityAssessment::TTS_TINKOFF => ModuleQualityAssessment::TTS_TINKOFF,
+            ModuleQualityAssessment::TTS_YANDEX => ModuleQualityAssessment::TTS_YANDEX,
+        ];
+        $ttsEngine = new Select(
+            'ttsEngine', $arrLibraryType, [
+                            'using'    => [
+                                'id',
+                                'name',
+                            ],
+                            'useEmpty' => true,
+                            'value'    => $entity->ttsEngine,
+                            'class'    => 'ui selection dropdown library-type-select',
+                        ]
+        );
+        $this->add($ttsEngine);
     }
 }

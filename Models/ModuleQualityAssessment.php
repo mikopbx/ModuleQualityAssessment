@@ -23,6 +23,9 @@ use MikoPBX\Modules\Models\ModulesModelsBase;
 
 class ModuleQualityAssessment extends ModulesModelsBase
 {
+    public const TTS_YANDEX  = 'Yandex';
+    public const TTS_TINKOFF = 'Tinkoff';
+    public const TTS_NONE = '-';
 
     /**
      * @Primary
@@ -38,12 +41,59 @@ class ModuleQualityAssessment extends ModulesModelsBase
     public $useTts;
 
     /**
+     * TTS Engine
+     * @Column(type="string", default="0", nullable=true)
+     */
+    public $ttsEngine;
+
+    /**
      * Yandex API Key
      *
      * @Column(type="string", nullable=true)
      */
     public $yandexApiKey;
 
+    /**
+     * Yandex folder id
+     *
+     * @Column(type="string", nullable=true)
+     */
+    public $yandexFolderId;
+
+    /**
+     * Tinkoff api key
+     *
+     * @Column(type="string", nullable=true)
+     */
+    public $tinkoffApiKey;
+
+    /**
+     * Tinkoff secret key
+     *
+     * @Column(type="string", nullable=true)
+     */
+    public $tinkoffSecretKey;
+
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    public $pressed1;
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    public $pressed2;
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    public $pressed3;
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    public $pressed4;
+    /**
+     * @Column(type="string", nullable=true)
+     */
+    public $pressed5;
 
     /**
      * Returns dynamic relations between module models and common models
@@ -80,20 +130,6 @@ class ModuleQualityAssessment extends ModulesModelsBase
     public function initialize(): void
     {
         $this->setSource('m_ModuleQualityAssessment');
-//        $this->hasOne(
-//            'dropdown_field',
-//            Providers::class,
-//            'id',
-//            [
-//                'alias'      => 'Providers',
-//                'foreignKey' => [
-//                    'allowNulls' => true,
-//                    'action'     => Relation::NO_ACTION,
-//                ],
-//            ]
-//        );
         parent::initialize();
     }
-
-
 }
