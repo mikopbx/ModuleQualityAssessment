@@ -86,9 +86,12 @@ try {
             foreach (explode(' ', $text) as $word){
                 foreach ($costs as $costArr => $value){
                     foreach (explode(' ', $costArr) as $cost) {
+                        if(empty(trim($cost))){
+                            return;
+                        }
                         $sim = mb_levenshtein($word, $cost);
                         if($sim <= 1){
-                            $agi->verbose("Get cost: $cost, val:$value".PHP_EOL, 0);
+                            $agi->verbose("Get cost: $cost, val:$value, word: $word".PHP_EOL, 0);
                             $am = Util::getAstManager('off');
                             $am->Redirect($channel, '', $value, 'ivr-quality', '1');
                             $agi->hangup();
