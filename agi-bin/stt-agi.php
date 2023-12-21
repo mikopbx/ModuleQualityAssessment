@@ -34,14 +34,14 @@ $channel        = $agi->request['agi_callerid'];
 $linkedId       = $agi->get_variable('IMPORT('.$channel.',CHANNEL(linkedid))', true);
 $backFilename   = $agi->get_variable('IMPORT('.$channel.',f_num)', true);
 
-$agi->noop('src.channel: '.$agi->request['agi_callerid'] . ", f_num: ".$backFilename. ', moduleDir: '.dirname(__DIR__));
+$agi->verbose('src.channel: '.$agi->request['agi_callerid'] . ", f_num: ".$backFilename. ', moduleDir: '.dirname(__DIR__), 0);
 $agi->exec('MixMonitor', $fName);
 try {
     while ($agi->exec('WaitForSilence', '1000')) {
         $newFilename = $agi->get_variable('IMPORT('.$channel.',f_num)', true);
         if($newFilename !== $backFilename){
             // Идет обработка другого вопроса или канал был завершен.
-            $agi->noop('END... src.channel: '.$agi->request['agi_callerid'] . ", new_f_num: ".$newFilename);
+            $agi->verbose('END... src.channel: '.$agi->request['agi_callerid'] . ", new_f_num: ".$newFilename, 0);
             break;
         }
         $agi->exec('StopMixMonitor', '');
@@ -53,7 +53,7 @@ try {
         if( Processes::mwExec("$soxPath $fName | grep '00:00:01.00'") ===0 ){
             unlink($fName);
         }else{
-            $agi->noop('src.channel: '.$agi->request['agi_callerid'] . ", new_f_num: ".$newFilename);
+            $agi->verbose('src.channel: '.$agi->request['agi_callerid'] . ", new_f_num: ".$newFilename, 0);
             $text = '';
             if($settings['ttsEngine'] === ModuleQualityAssessment::TTS_TINKOFF){
                 $commands = [
@@ -72,7 +72,7 @@ try {
                 $ya = new YandexSynthesize($tmpDir, $settings['yandexApiKey'], $folderId);
                 $text = mb_strtolower($ya->getTextFromSpeech($oldFilename));
             }
-            $agi->noop('Result TTS: '.$text);
+            $agi->verbose('Result TTS: '.$text, 0);
             // Чистим знаки пунктуации
             $text = preg_replace('/[[:punct:]]/u', ' ', $text);
             unlink($oldFilename);
@@ -87,8 +87,8 @@ try {
                 foreach ($costs as $costArr => $value){
                     foreach (explode(' ', $costArr) as $cost) {
                         $sim = mb_levenshtein($word, $cost);
-                        if($sim <= 2){
-                            $agi->noop("Get cost: $cost, val:$value".PHP_EOL);
+                        if($sim <= 1){
+                            $agi->verbose("Get cost: $cost, val:$value".PHP_EOL, 0);
                             $am = Util::getAstManager('off');
                             $am->Redirect($channel, '', $value, 'ivr-quality', '1');
                             $agi->hangup();
@@ -100,5 +100,5 @@ try {
         }
     }
 } catch (Exception $err) {
-    $agi->noop(implode(' ', $err->getTrace()));
+    $agi->verbose(implode(' ', $err->getTrace()), 0);
 }
