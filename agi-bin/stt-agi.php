@@ -14,6 +14,7 @@ $settings = ConnectorDB::invoke('getSettings', [],true);
 if(empty($settings) || $settings['ttsEngine'] === ModuleQualityAssessment::TTS_NONE){
     exit(1);
 }
+set_time_limit(60);
 
 $agi = new AGI();
 $agi->answer();
@@ -38,6 +39,10 @@ $agi->verbose('src.channel: '.$agi->request['agi_callerid'] . ", f_num: ".$backF
 $agi->exec('MixMonitor', $fName);
 try {
     while ($agi->exec('WaitForSilence', '1000')) {
+        $linkedId       = $agi->get_variable('IMPORT('.$channel.',CHANNEL(linkedid))', true);
+        if(empty($linkedId)){
+            break;
+        }
         $newFilename = $agi->get_variable('IMPORT('.$channel.',f_num)', true);
         if($newFilename !== $backFilename){
             // Идет обработка другого вопроса или канал был завершен.

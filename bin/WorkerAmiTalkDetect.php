@@ -59,8 +59,6 @@ class WorkerAmiTalkDetect extends WorkerBase
      */
     public function callback($parameters): void
     {
-        print_r($parameters);
-
         $linkedId = $parameters['Linkedid']??'';
         $channel = $parameters['Channel']??'';
         if('ChannelTalkingStop' === $parameters['Event'] ||
