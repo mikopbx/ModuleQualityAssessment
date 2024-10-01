@@ -21,13 +21,7 @@
 namespace Modules\ModuleQualityAssessment\App\Controllers;
 
 use MikoPBX\AdminCabinet\Controllers\BaseController;
-use MikoPBX\Common\Models\CallQueues;
-use MikoPBX\Common\Models\Extensions;
 use MikoPBX\Modules\PbxExtensionUtils;
-use Modules\ModuleQualityAssessment\App\Forms\ModuleQualityAssessmentForm;
-use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
-use MikoPBX\Common\Models\Providers;
-use Modules\ModuleQualityAssessment\Models\PhoneBook;
 
 class AdditionalPageController extends BaseController
 {

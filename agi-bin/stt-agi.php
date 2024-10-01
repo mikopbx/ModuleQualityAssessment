@@ -1,12 +1,14 @@
 #!/usr/bin/php
 <?php
 require_once('Globals.php');
+
 use MikoPBX\Core\Asterisk\AGI;
 use MikoPBX\Core\System\Util;
 use MikoPBX\Core\System\Processes;
 use Modules\ModuleQualityAssessment\bin\ConnectorDB;
+use Modules\ModuleQualityAssessment\Lib\MikoPBXVersion;
 use Modules\ModuleQualityAssessment\Models\ModuleQualityAssessment;
-use Modules\ModuleQualityAssessment\Lib\YandexSynthesize;use Phalcon\Di;
+use Modules\ModuleQualityAssessment\Lib\YandexSynthesize;
 
 include_once dirname(__DIR__).'/vendor/keinos/mb_levenshtein/mb_levenshtein.php';
 
@@ -23,7 +25,8 @@ $agi->set_variable('AGISIGHUP', 'yes');
 $agi->set_variable('__ENDCALLONANSWER', 'yes');
 
 $tmpDir = '/tmp';
-$di = Di::getDefault();
+
+$di = MikoPBXVersion::getDefaultDi();
 if ($di) {
     $dirsConfig = $di->getShared('config');
     $tmpDir     = $dirsConfig->path('core.tempDir') . '/stt';

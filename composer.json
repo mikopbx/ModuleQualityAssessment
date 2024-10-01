@@ -2,6 +2,7 @@
     "name": "mikopbx/moduletemplate",
     "description": "ModuleQualityAssessment",
     "require": {
+        "php": "^7.4 || ^8.0",
         "keinos/mb_levenshtein": "=1.0.1",
         "cesargb/php-log-rotation": "=2.6.0"
     },
@@ -29,7 +30,7 @@
         "wiki": "https://wiki.mikopbx.com",
         "issues": "https://github.com/mikopbx/Core/issues",
         "source": "https://github.com/mikopbx/Core",
-        "forum": "https://qa.askozia.ru",
+        "forum": "https://qa.mikopbx.ru",
         "chat": "https://t.me/mikopbx_dev"
     },
     "authors": [
@@ -42,7 +43,7 @@
         {
             "name": "Nikolay Beketov",
             "email": "nbek@miko.ru",
-            "homepage": "http://facebook.com/jorikfon",
+            "homepage": "https://www.linkedin.com/in/nikolay-beketov",
             "role": "Developer"
         }
     ],
@@ -55,7 +56,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "7.4.6"
+            "php": "^7.4 || ^8.0"
         }
     }
 }

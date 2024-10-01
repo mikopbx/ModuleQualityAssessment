@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-namespace Modules\ModuleQualityAssessment\Lib;
+namespace Modules\ModuleQualityAssessment\bin;
 require_once 'Globals.php';
 
 use MikoPBX\Core\System\{BeanstalkClient, Storage, Util};

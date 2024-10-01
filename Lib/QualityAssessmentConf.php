@@ -38,9 +38,9 @@ class QualityAssessmentConf extends ConfigClass
     /**
      * Receive information about mikopbx main database changes
      *
-     * @param $data
+     * @param mixed $data
      */
-    public function modelsEventChangeData($data): void
+    public function modelsEventChangeData(mixed $data): void
     {
         if (in_array($data['model'], [ModuleQualityAssessment::class, QuestionsList::class], true ) ){
             PBX::dialplanReload();
