@@ -40,7 +40,7 @@ class QualityAssessmentConf extends ConfigClass
      *
      * @param mixed $data
      */
-    public function modelsEventChangeData(mixed $data): void
+    public function modelsEventChangeData($data): void
     {
         if (in_array($data['model'], [ModuleQualityAssessment::class, QuestionsList::class], true ) ){
             PBX::dialplanReload();
