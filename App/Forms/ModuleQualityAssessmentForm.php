@@ -1,4 +1,5 @@
 <?php
+
 /*
  * MikoPBX - free phone system for small business
  * Copyright © 2017-2023 Alexey Portnov and Nikolay Beketov
@@ -26,10 +27,9 @@ use Phalcon\Forms\Element\Check;
 use Phalcon\Forms\Element\Hidden;
 use Phalcon\Forms\Element\Select;
 
-
 class ModuleQualityAssessmentForm extends Form
 {
-    public function initialize($entity = null, $options = null) :void
+    public function initialize($entity = null, $options = null): void
     {
         $this->add(new Hidden('id', ['value' => $entity->id]));
         $this->add(new Text('yandexApiKey'));
@@ -43,11 +43,7 @@ class ModuleQualityAssessmentForm extends Form
         $this->add(new Text('pressed4'));
         $this->add(new Text('pressed5'));
 
-        $useTts = ['value' => null];
-        if ($entity->useTts === '1') {
-            $useTts = ['checked' => 'checked', 'value' => null];
-        }
-        $this->add(new Check('useTts', $useTts));
+        $this->addCheckBox('useTts', intval($entity->useTts) === 1);
 
         $arrLibraryType = [
             ModuleQualityAssessment::TTS_NONE => ModuleQualityAssessment::TTS_NONE,
@@ -55,7 +51,9 @@ class ModuleQualityAssessmentForm extends Form
             ModuleQualityAssessment::TTS_YANDEX => ModuleQualityAssessment::TTS_YANDEX,
         ];
         $ttsEngine = new Select(
-            'ttsEngine', $arrLibraryType, [
+            'ttsEngine',
+            $arrLibraryType,
+            [
                             'using'    => [
                                 'id',
                                 'name',
@@ -66,5 +64,23 @@ class ModuleQualityAssessmentForm extends Form
                         ]
         );
         $this->add($ttsEngine);
+    }
+
+    /**
+     * Adds a checkbox to the form field with the given name.
+     * Can be deleted if the module depends on MikoPBX later than 2024.3.0
+     *
+     * @param string $fieldName The name of the form field.
+     * @param bool $checked Indicates whether the checkbox is checked by default.
+     * @param string $checkedValue The value assigned to the checkbox when it is checked.
+     * @return void
+     */
+    public function addCheckBox(string $fieldName, bool $checked, string $checkedValue = 'on'): void
+    {
+        $checkAr = ['value' => null];
+        if ($checked) {
+            $checkAr = ['checked' => $checkedValue,'value' => $checkedValue];
+        }
+        $this->add(new Check($fieldName, $checkAr));
     }
 }
